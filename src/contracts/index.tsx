@@ -18,6 +18,24 @@ export class FetchRecipesRequest {
     maxReadyTime?: number;
 }
 
+export interface WinePairing {
+    pairedWines: string[];
+    pairingText: string;
+    productMatches: ProductMatch[];
+}
+
+export interface ProductMatch {
+    id: string;
+    title: string;
+    description: string;
+    price: string;
+    imageUrl: string;
+    averageRating: string;
+    ratingCount: string;
+    score: string;
+    link: string;
+}
+
 export interface RecipeDetail {
     vegetarian: boolean;
     vegan: boolean;
@@ -51,7 +69,7 @@ export interface RecipeDetail {
     dishTypes: string[];
     diets: string[];
     occasions: any[];
-    winePairing: any;
+    winePairing: WinePairing;
     instructions: string;
     analyzedInstructions: AnalyzedInstruction[];
     originalId?: any;

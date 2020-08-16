@@ -1,0 +1,20 @@
+.instructions-modal {
+    .ant-modal-content {
+        .ant-modal-body {
+            .checkbox {
+                display: grid;
+                grid-template-columns: 24px 1fr;
+                align-items: flex-start;
+                .ant-checkbox {
+                    margin: 6px auto;
+                }
+                margin: 12px 0;
+                &.checked {
+                    span {
+                        text-decoration: line-through;
+                    }
+                }
+            }
+        }
+    }
+}
