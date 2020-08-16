@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import RecipeListPage from "./pages/RecipeListPage";
+import RecipeDetailsPage from "./pages/RecipeDetailsPage";
+import InstructionsPage from "./pages/InstructionsPage";
+
+const Routes = () => {
+    return (
+        <Router>
+            <Switch>
+                <Route exact path="/" component={HomePage} />
+                <Route
+                    path="/recipe/instruction/:id"
+                    component={InstructionsPage}
+                />
+                <Route path="/recipe/:id" component={RecipeDetailsPage} />
+                <Route path="/recipes" component={RecipeListPage} />
+            </Switch>
+        </Router>
+    );
+};
+
+const App = () => {
+    return <Routes />;
+};
 
 export default App;
