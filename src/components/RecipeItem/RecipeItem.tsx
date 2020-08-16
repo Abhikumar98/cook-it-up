@@ -4,7 +4,6 @@ import { Recipe, AppRoutes } from "../../contracts";
 import { useHistory } from "react-router-dom";
 
 const Container = styled.div`
-    height: 350px;
     border-radius: 4px;
     border: 1px solid #e8e8e8;
     overflow: hidden;
@@ -12,7 +11,6 @@ const Container = styled.div`
         cursor: pointer;
     }
     .image-container {
-        height: 80%;
         text-align: center;
     }
     img {
@@ -20,7 +18,7 @@ const Container = styled.div`
         width: 100%;
     }
     .title {
-        padding: 12px;
+        padding: 6px 12px;
         font-size: 1.5rem;
         font-weight: 600;
     }
