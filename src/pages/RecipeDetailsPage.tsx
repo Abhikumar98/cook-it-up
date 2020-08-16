@@ -47,26 +47,28 @@ const LeftSideContents = styled.div`
             margin-bottom: 12px;
         }
     }
-    .chip-container {
-        display: flex;
-        flex-wrap: wrap;
-        .chip {
-            margin: 6px 3px;
-            height: 1.5rem;
-            border-radius: 6px;
+    .scroll {
+        .chip-container {
             display: flex;
-            align-items: center;
-            padding: 6px;
-            width: fit-content;
-            color: white;
-            &.one {
-                background-color: dodgerblue;
-            }
-            &.two {
-                background-color: #00843c;
-            }
-            &.three {
-                background-color: #e05746;
+            flex-wrap: wrap;
+            .chip {
+                margin: 6px 3px;
+                height: 1.5rem;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                padding: 6px;
+                width: fit-content;
+                color: white;
+                &.one {
+                    background-color: dodgerblue;
+                }
+                &.two {
+                    background-color: #00843c;
+                }
+                &.three {
+                    background-color: #e05746;
+                }
             }
         }
     }
@@ -129,24 +131,26 @@ const RecipeDetails: React.FC<Props> = (props) => {
                             </a>
                         </div>
                     </div>
-                    <div className="chip-container">
-                        {recipeDetails?.cuisines.map((i) => (
-                            <div key={i} className="chip one">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
-                        {recipeDetails?.diets.map((i) => (
-                            <div key={i} className="chip two">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
-                        {recipeDetails?.dishTypes.map((i) => (
-                            <div key={i} className="chip three">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
+                    <div className="scroll">
+                        <div className="chip-container">
+                            {recipeDetails?.cuisines.map((i) => (
+                                <div key={i} className="chip one">
+                                    {capitalizeFirstLetter(i)}
+                                </div>
+                            ))}
+                            {recipeDetails?.diets.map((i) => (
+                                <div key={i} className="chip two">
+                                    {capitalizeFirstLetter(i)}
+                                </div>
+                            ))}
+                            {recipeDetails?.dishTypes.map((i) => (
+                                <div key={i} className="chip three">
+                                    {capitalizeFirstLetter(i)}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="summary">{recipeDetails?.summary}</div>
                     </div>
-                    <div className="summary">{recipeDetails?.summary}</div>
                 </LeftSideContents>
                 <RightSideContents></RightSideContents>
             </DetailsContainer>
