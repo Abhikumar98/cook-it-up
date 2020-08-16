@@ -36,10 +36,13 @@ const SearchBoxContainer = styled.div`
 
     .ant-form {
         .search-bar-container {
-            .ant-input {
+            .ant-input-affix-wrapper {
                 width: 95%;
                 height: 2.5rem;
-                border-radius: 4px;
+                .ant-input {
+                    font-size: 1.2rem;
+                    border-radius: 4px;
+                }
             }
             .ant-form-item {
                 margin: 0;
@@ -118,14 +121,14 @@ const HomePage = () => {
                     <SubHeadingText>Begin something something</SubHeadingText>
                     <Form
                         labelAlign="left"
-                        labelCol={{ span: 6 }}
+                        labelCol={{ span: 7 }}
                         layout="horizontal"
                         onFinish={fetchRecipes}
                         initialValues={undefined}
                     >
                         <div className="search-bar-container">
                             <Form.Item name="query">
-                                <Input />
+                                <Input allowClear />
                             </Form.Item>
                             <Button
                                 type="primary"
@@ -137,10 +140,11 @@ const HomePage = () => {
                         </div>
                         <Collapse>
                             <Collapse.Panel key="1" header="Filters">
-                                <Form.Item label="Choose your diet" name="diet">
+                                <Form.Item label="Diet" name="diet">
                                     <Select
                                         placeholder="Choose your diet"
                                         mode="multiple"
+                                        allowClear
                                     >
                                         {Diets.map((i) => (
                                             <Select.Option key={i} value={i}>
@@ -149,11 +153,9 @@ const HomePage = () => {
                                         ))}
                                     </Select>
                                 </Form.Item>
-                                <Form.Item
-                                    label="Choose your cuisine"
-                                    name="cuisine"
-                                >
+                                <Form.Item label="Cuisine" name="cuisine">
                                     <Select
+                                        allowClear
                                         placeholder="Choose your cuisine"
                                         mode="multiple"
                                     >
@@ -169,12 +171,16 @@ const HomePage = () => {
                                     name="includeIngredients"
                                 >
                                     <Select
+                                        allowClear
                                         placeholder="Type ingredients to include"
                                         mode="tags"
                                     />
                                 </Form.Item>
                                 <Form.Item label="Type of food" name="type">
-                                    <Select placeholder="Type ingredients to include">
+                                    <Select
+                                        allowClear
+                                        placeholder="Type ingredients to include"
+                                    >
                                         {FoodTypes.map((i) => (
                                             <Select.Option key={i} value={i}>
                                                 {capitalizeFirstLetter(i)}
