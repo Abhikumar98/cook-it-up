@@ -1,7 +1,9 @@
 import axios, { AxiosResponse } from "axios";
-import { FetchRecipesRequest, Recipe } from "../contracts";
+import { FetchRecipesRequest, Recipe, RecipeDetail } from "../contracts";
 
 const fetchRecipesURL = "https://api.spoonacular.com/recipes/complexSearch";
+const fetchRecipeDetailsURL =
+    "https://api.spoonacular.com/recipes/{id}/information";
 
 export const getRecipes = async (
     fetchRecipesRequest: FetchRecipesRequest
@@ -36,6 +38,19 @@ export const getRecipes = async (
         const response: AxiosResponse<Recipe> = await axios.get(url);
         return response.data;
     } catch (error) {
-        return Promise.reject();
+        return Promise.reject(error);
+    }
+};
+
+export const getRecipeDetails = async (id: string): Promise<RecipeDetail> => {
+    try {
+        const response: AxiosResponse<RecipeDetail> = await axios.get(
+            fetchRecipeDetailsURL.replace("{id}", id) +
+                `?apiKey=cd3085c506154c0bbde6144acb84228e`
+        );
+
+        return response.data;
+    } catch (error) {
+        return Promise.reject(error);
     }
 };
