@@ -1,3 +1,7 @@
 export const capitalizeFirstLetter = (value: string): string => {
     return value[0].toLocaleUpperCase() + value.slice(1, value.length);
 };
+
+export const sampleResponse = JSON.parse(
+    `[{"id": 296687,"title": "Chicken","image": "https://spoonacular.com/recipeImages/296687-312x231.jpeg","imageType": "jpeg"},{"id": 379523,"title": "Chicken","image": "https://spoonacular.com/recipeImages/379523-312x231.jpeg","imageType": "jpeg"},{"id": 1224783,"title": "Chicken 65","image": "https://spoonacular.com/recipeImages/1224783-312x231.jpg","imageType": "jpg"},{"id": 637876,"title": "Chicken 65","image": "https://spoonacular.com/recipeImages/637876-312x231.jpg","imageType": "jpg"},{"id": 737543,"title": "Chicken Pie","image": "https://spoonacular.com/recipeImages/737543-312x231.jpeg","imageType": "jpeg"},{"id": 74194,"title": "Chicken Olé","image": "https://spoonacular.com/recipeImages/74194-312x231.jpg","imageType": "jpg"},{"id": 42569,"title": "Chicken Bbq","image": "https://spoonacular.com/recipeImages/42569-312x231.jpg","imageType": "jpg"},{"id": 737537,"title": "Chicken Pho","image": "https://spoonacular.com/recipeImages/737537-312x231.jpeg","imageType": "jpeg"},{"id": 279390,"title": "Chicken Mac","image": "https://spoonacular.com/recipeImages/279390-312x231.jpg","imageType": "jpg"},{"id": 496844,"title": "Chicken Pho","image": "https://spoonacular.com/recipeImages/496844-312x231.jpg","imageType": "jpg"}]`
+);

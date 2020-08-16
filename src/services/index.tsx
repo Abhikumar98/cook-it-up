@@ -1,13 +1,39 @@
 import axios, { AxiosResponse } from "axios";
-import { FetchRecipesRequest } from "../contracts";
+import { FetchRecipesRequest, Recipe } from "../contracts";
 
-const fetchRecipesURL = "https://api.spoonacular.com/recipes/";
+const fetchRecipesURL = "https://api.spoonacular.com/recipes/complexSearch";
 
-export const fetchRecipes = async (
+export const getRecipes = async (
     fetchRecipesRequest: FetchRecipesRequest
-): Promise<any> => {
+): Promise<Recipe> => {
     try {
-        const response: AxiosResponse<any> = await axios.get(fetchRecipesURL);
+        let queryParams = "";
+        let url = fetchRecipesURL;
+
+        Object.keys(fetchRecipesRequest).forEach((req: any, i: number) => {
+            const value = ((fetchRecipesRequest as unknown) as Record<
+                string,
+                string
+            >)[req];
+            if (value) {
+                queryParams =
+                    queryParams + `${i === 0 ? "" : "&"}${req}=${value}`;
+            }
+        });
+
+        console.log({ v: process.env });
+
+        if (queryParams.length > 0) {
+            url = `${url}?${queryParams}`;
+            // url = `${url}?${queryParams}&apiKey=cd3085c506154c0bbde6144acb84228e`;
+        } else {
+            url = `${url}`;
+            // url = `${url}?apiKey=cd3085c506154c0bbde6144acb84228e`;
+        }
+
+        console.error("I have removed the API key for now");
+
+        const response: AxiosResponse<Recipe> = await axios.get(url);
         return response.data;
     } catch (error) {
         return Promise.reject();

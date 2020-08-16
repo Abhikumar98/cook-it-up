@@ -1,12 +1,27 @@
+export enum AppRoutes {
+    HomePage = "/",
+    RecipeListPage = "/recipes",
+    RecipeDetailsPage = "/recipe/:id",
+    RecipeInstructionsPage = "/recipe/:id/instructions",
+}
+
 export class FetchRecipesRequest {
-    readonly query = "";
-    readonly cuisine?: string;
-    readonly diet?: string;
-    readonly includeIngredients?: string;
-    readonly type?: string;
-    readonly instructionsRequired?: boolean;
-    readonly fillIngredients?: boolean;
-    readonly addRecipeInformation?: boolean;
+    query = "";
+    cuisine?: string;
+    diet?: string;
+    includeIngredients?: string;
+    type?: string;
+    instructionsRequired?: boolean;
+    fillIngredients?: boolean;
+    addRecipeInformation?: boolean;
+    ignorePantry = true;
+    maxReadyTime?: number;
+}
+
+export interface Recipe {
+    id: string;
+    image: string;
+    title: string;
 }
 
 export const Diets = [
@@ -66,4 +81,3 @@ export const FoodTypes = [
     "snack",
     "drink",
 ];
-

@@ -4,18 +4,25 @@ import HomePage from "./pages/HomePage";
 import RecipeListPage from "./pages/RecipeListPage";
 import RecipeDetailsPage from "./pages/RecipeDetailsPage";
 import InstructionsPage from "./pages/InstructionsPage";
+import { AppRoutes } from "./contracts";
 
 const Routes = () => {
     return (
         <Router>
             <Switch>
-                <Route exact path="/" component={HomePage} />
+                <Route exact path={AppRoutes.HomePage} component={HomePage} />
                 <Route
-                    path="/recipe/instruction/:id"
+                    path={AppRoutes.RecipeInstructionsPage}
                     component={InstructionsPage}
                 />
-                <Route path="/recipe/:id" component={RecipeDetailsPage} />
-                <Route path="/recipes" component={RecipeListPage} />
+                <Route
+                    path={AppRoutes.RecipeDetailsPage}
+                    component={RecipeDetailsPage}
+                />
+                <Route
+                    path={AppRoutes.RecipeListPage}
+                    component={RecipeListPage}
+                />
             </Switch>
         </Router>
     );

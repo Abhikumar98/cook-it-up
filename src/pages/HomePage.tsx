@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Input, Form, Button, Collapse, Switch, Select } from "antd";
+import { Input, Form, Button, Collapse, Select, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Store } from "antd/lib/form/interface";
-import { Diets, Cuisines, FoodTypes } from "../contracts";
+import { Diets, Cuisines, FoodTypes, FetchRecipesRequest } from "../contracts";
 import { capitalizeFirstLetter } from "../utils";
+import { getRecipes } from "../services";
 
 const Container = styled.div`
     height: 100vh;
@@ -92,13 +93,29 @@ const LayoutContainer = styled.div`
 const HomePage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const fetchRecipes = async (values: Store) => {
+        const fetchRecipesRequest = new FetchRecipesRequest();
+
+        fetchRecipesRequest.query = values.query;
+        fetchRecipesRequest.type = values.type;
+        fetchRecipesRequest.diet = values.diet
+            ? values.diet.join(",")
+            : undefined;
+        fetchRecipesRequest.fillIngredients = false;
+        fetchRecipesRequest.includeIngredients = values.includeIngredients
+            ? values.includeIngredients.join(",")
+            : undefined;
+        fetchRecipesRequest.instructionsRequired = false;
+        fetchRecipesRequest.cuisine = values.cuisine
+            ? values.cuisine.join(",")
+            : undefined;
         try {
-            console.log(values);
             setIsLoading(true);
-            // const response = await fetchRecipes()
-            setIsLoading(false);
+            const response = await getRecipes(fetchRecipesRequest);
         } catch (error) {
             console.error(error);
+            message.error(error);
+        } finally {
+            setIsLoading(false);
         }
     };
     return (
@@ -134,6 +151,8 @@ const HomePage = () => {
                                 type="primary"
                                 htmlType="submit"
                                 icon={<SearchOutlined />}
+                                disabled={isLoading}
+                                loading={isLoading}
                             >
                                 Search
                             </Button>
