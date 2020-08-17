@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { SearchOutlined } from "@ant-design/icons";
-import { Input, Button, Collapse, Select, Form, message } from "antd";
-import { Diets, Cuisines, FoodTypes, FetchRecipesRequest } from "../contracts";
-import { capitalizeFirstLetter, sampleResponse } from "../utils";
+import { Input, Button, Select, Form, message, Popover } from "antd";
+import {
+    Diets,
+    Cuisines,
+    FoodTypes,
+    FetchRecipesRequest,
+    Recipe,
+    AppRoutes,
+} from "../contracts";
+import { capitalizeFirstLetter } from "../utils";
+import queryString from "query-string";
 import { Store } from "antd/lib/form/interface";
 import { getRecipes } from "../services";
 import RecipeItem from "../components/RecipeItem/RecipeItem";
+import { RouteComponentProps, useHistory } from "react-router-dom";
+import emptyImage from "../Assests/empty.png";
+import { useForm } from "antd/lib/form/Form";
 
 const SearchBoxContainer = styled.div`
     background: white;
@@ -39,10 +50,13 @@ const SearchBoxContainer = styled.div`
         }
         .ant-collapse {
             border: none;
+
             .ant-collapse-item {
+                background: white;
                 border: none;
                 .ant-collapse-content {
                     border: none;
+                    width: 33rem;
                 }
                 .ant-collapse-header {
                     background: white;
@@ -56,6 +70,15 @@ const SearchBoxContainer = styled.div`
 const Container = styled.div`
     height: 100vh;
     width: 100vw;
+    .empty {
+        width: 30rem;
+        margin: auto;
+        margin-top: 12rem;
+        text-align: center;
+        img {
+            width: 100%;
+        }
+    }
 `;
 const ResultContainer = styled.div`
     padding: 24px;
@@ -68,13 +91,59 @@ const ResultLayout = styled.div`
     overflow: auto;
 `;
 
-const RecipeList = () => {
+interface Props extends RouteComponentProps {}
+
+const RecipeList: React.FC<Props> = (props) => {
+    const [form] = useForm();
+    const history = useHistory();
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const [recipes, setRecipes] = useState<Recipe[] | null>(
+        props.location.state ? (props.location.state as any).results : null
+    );
+
+    const arrayKeys = ["type", "diet", "includeIngredients", "cuisine"];
+
+    const constructFiltersFromQS = (qs: string): any => {
+        const oldFilters = Object.keys(qs).reduce((final: any, key: any) => {
+            let value: string | string[] = ((qs as unknown) as Record<
+                string,
+                string
+            >)[key];
+
+            value =
+                value.split(",").length > 1
+                    ? value.split(",")
+                    : arrayKeys.includes(key)
+                    ? [value]
+                    : value;
+            final = {
+                ...final,
+                [key]: value,
+            };
+            return final;
+        }, {});
+        return oldFilters;
+    };
+
+    const getDefaultQS = () => {
+        const parsedQuery = queryString.parse(props.location.search);
+        const oldFilters = constructFiltersFromQS(
+            (parsedQuery as unknown) as string
+        );
+        return oldFilters;
+    };
+
+    const [filters, setFilters] = useState<any | undefined>(getDefaultQS());
+
     const fetchRecipes = async (values: Store) => {
         const fetchRecipesRequest = new FetchRecipesRequest();
 
         fetchRecipesRequest.query = values.query;
-        fetchRecipesRequest.type = values.type;
+        fetchRecipesRequest.type = values.type
+            ? values.type.join(",")
+            : undefined;
         fetchRecipesRequest.diet = values.diet
             ? values.diet.join(",")
             : undefined;
@@ -88,7 +157,26 @@ const RecipeList = () => {
             : undefined;
         try {
             setIsLoading(true);
+
+            let queryParams = "";
+
+            Object.keys(fetchRecipesRequest).forEach((req: any, i: number) => {
+                const value = ((fetchRecipesRequest as unknown) as Record<
+                    string,
+                    string
+                >)[req];
+                if (value) {
+                    queryParams =
+                        queryParams + `${i === 0 ? "" : "&"}${req}=${value}`;
+                }
+            });
             const response = await getRecipes(fetchRecipesRequest);
+            setRecipes(response);
+            history.push(
+                `${AppRoutes.RecipeListPage}${
+                    queryParams.length > 0 ? `?${queryParams}` : ""
+                }`
+            );
         } catch (error) {
             console.error(error);
             message.error(error);
@@ -96,6 +184,43 @@ const RecipeList = () => {
             setIsLoading(false);
         }
     };
+
+    const fetchMoreRecipes = async () => {
+        try {
+            const fetchRecipesRequest = new FetchRecipesRequest();
+            fetchRecipesRequest.query = filters.query;
+            fetchRecipesRequest.type = filters.type;
+            fetchRecipesRequest.diet = filters.diet
+                ? filters.diet.join(",")
+                : undefined;
+            fetchRecipesRequest.fillIngredients = false;
+            fetchRecipesRequest.includeIngredients = filters.includeIngredients
+                ? filters.includeIngredients.join(",")
+                : undefined;
+            fetchRecipesRequest.instructionsRequired = false;
+            fetchRecipesRequest.cuisine = filters.cuisine
+                ? filters.cuisine.join(",")
+                : undefined;
+            fetchRecipesRequest.offset = recipes?.length;
+            const response = await getRecipes(fetchRecipesRequest);
+            const allRecipes = recipes ? [...recipes, ...response] : response;
+            setRecipes(allRecipes);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        const parsedQuery = queryString.parse(props.location.search);
+        if (parsedQuery) {
+            const oldFilters = constructFiltersFromQS(
+                (parsedQuery as unknown) as string
+            );
+            setFilters(oldFilters);
+            fetchRecipes(oldFilters);
+        }
+    }, []);
+
     return (
         <Container>
             <SearchBoxContainer>
@@ -104,11 +229,18 @@ const RecipeList = () => {
                     labelCol={{ span: 7 }}
                     layout="horizontal"
                     onFinish={fetchRecipes}
-                    initialValues={undefined}
+                    initialValues={filters}
+                    form={form}
                 >
                     <div className="search-bar-container">
                         <Form.Item name="query">
-                            <Input allowClear />
+                            <Input
+                                allowClear
+                                onPressEnter={() => {
+                                    const a = form.getFieldsValue();
+                                    console.log(a);
+                                }}
+                            />
                         </Form.Item>
                         <Button
                             type="primary"
@@ -120,67 +252,84 @@ const RecipeList = () => {
                             Search
                         </Button>
                     </div>
-                    <Collapse>
-                        <Collapse.Panel key="1" header="Filters">
-                            <Form.Item label="Diet" name="diet">
-                                <Select
-                                    placeholder="Choose your diet"
-                                    mode="multiple"
-                                    allowClear
+                    <Popover
+                        trigger="click"
+                        placement="bottomLeft"
+                        content={
+                            <>
+                                <Form.Item label="Diet" name="diet">
+                                    <Select
+                                        placeholder="Choose your diet"
+                                        mode="multiple"
+                                        allowClear
+                                    >
+                                        {Diets.map((i) => (
+                                            <Select.Option key={i} value={i}>
+                                                {i}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item label="Cuisine" name="cuisine">
+                                    <Select
+                                        allowClear
+                                        placeholder="Choose your cuisine"
+                                        mode="multiple"
+                                    >
+                                        {Cuisines.map((i) => (
+                                            <Select.Option key={i} value={i}>
+                                                {i}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="Include ingredients"
+                                    name="includeIngredients"
                                 >
-                                    {Diets.map((i) => (
-                                        <Select.Option key={i} value={i}>
-                                            {i}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                            <Form.Item label="Cuisine" name="cuisine">
-                                <Select
-                                    allowClear
-                                    placeholder="Choose your cuisine"
-                                    mode="multiple"
-                                >
-                                    {Cuisines.map((i) => (
-                                        <Select.Option key={i} value={i}>
-                                            {i}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                            <Form.Item
-                                label="Include ingredients"
-                                name="includeIngredients"
-                            >
-                                <Select
-                                    allowClear
-                                    placeholder="Type ingredients to include"
-                                    mode="tags"
-                                />
-                            </Form.Item>
-                            <Form.Item label="Type of food" name="type">
-                                <Select
-                                    allowClear
-                                    placeholder="Type ingredients to include"
-                                >
-                                    {FoodTypes.map((i) => (
-                                        <Select.Option key={i} value={i}>
-                                            {capitalizeFirstLetter(i)}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </Collapse.Panel>
-                    </Collapse>
+                                    <Select
+                                        allowClear
+                                        placeholder="Type ingredients to include"
+                                        mode="tags"
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Type of food" name="type">
+                                    <Select
+                                        allowClear
+                                        placeholder="Type ingredients to include"
+                                        mode="multiple"
+                                    >
+                                        {FoodTypes.map((i) => (
+                                            <Select.Option key={i} value={i}>
+                                                {capitalizeFirstLetter(i)}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </>
+                        }
+                    >
+                        <Button type="link">Filters</Button>
+                    </Popover>
                 </Form>
             </SearchBoxContainer>
-            <ResultLayout>
-                <ResultContainer>
-                    {sampleResponse.map((i: any) => (
-                        <RecipeItem key={i.id} data={i} />
-                    ))}
-                </ResultContainer>
-            </ResultLayout>
+            {recipes && recipes.length > 0 ? (
+                <ResultLayout>
+                    <ResultContainer>
+                        {recipes?.map((i: any) => (
+                            <RecipeItem key={i.id} data={i} />
+                        ))}
+                    </ResultContainer>
+                </ResultLayout>
+            ) : (
+                <div className="empty">
+                    <img src={emptyImage} />
+                    We couldn't find what you want !!
+                </div>
+            )}
+            {recipes && recipes.length > 0 && (
+                <Button onClick={fetchMoreRecipes}>Load More</Button>
+            )}
         </Container>
     );
 };

@@ -49,9 +49,9 @@ const LeftSideContents = styled.div`
             text-align: center;
         }
         .title-time {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: grid;
+            grid-template-columns: 1fr 130px;
+            align-items: flex-start;
             .title,
             .time {
                 font-size: 2rem;
@@ -132,7 +132,7 @@ const RightSideContents = styled.div`
         .ingredient {
             display: grid;
             grid-template-columns: 1fr 7rem;
-            height: 2rem;
+            min-height: 2rem;
             align-items: center;
             border: 1px solid #e8e8e8;
             border-radius: 4px;
@@ -175,17 +175,21 @@ const RecipeDetails: React.FC<Props> = (props) => {
     const fetchRecipeDetails = async () => {
         try {
             const recipeId = props.match.params.id;
-            // const response = await getRecipeDetails(recipeId);
-            // console.log(response);
-            // setRecipeDetails(response);
-            setRecipeDetails(JSON.parse(sample));
+            const response = await getRecipeDetails(recipeId);
+
+            response.analyzedInstructions.forEach((x, i) => {
+                if (x.name === "" && x.steps.length > 0) {
+                    response.analyzedInstructions[i].name = response.title;
+                }
+            });
+
+            setRecipeDetails(response);
         } catch (error) {
             console.error(error);
             message.error(error.message);
         }
     };
 
-    console.log("===> ", recipeDetails);
     useEffect(() => {
         fetchRecipeDetails();
     }, []);
@@ -234,7 +238,12 @@ const RecipeDetails: React.FC<Props> = (props) => {
                             </div>
                         ))}
                     </div>
-                    <div className="summary">{recipeDetails?.summary}</div>
+                    <div
+                        className="summary"
+                        dangerouslySetInnerHTML={{
+                            __html: recipeDetails?.summary ?? "",
+                        }}
+                    />
                     {recipeDetails &&
                         recipeDetails.winePairing &&
                         recipeDetails.winePairing.pairedWines &&
@@ -265,33 +274,39 @@ const RecipeDetails: React.FC<Props> = (props) => {
                 <RightSideContents>
                     <div className="section-heading">
                         Ingredients{" "}
-                        <div className="instructions">
-                            <div className="section-heading">
-                                <Dropdown
-                                    overlay={
-                                        <Menu>
-                                            {recipeDetails?.analyzedInstructions.map(
-                                                (i, index) => (
-                                                    <Menu.Item
-                                                        key={index}
-                                                        onClick={() => {
-                                                            openInstructionsModal();
-                                                            setAnalysedInstructionTitle(
-                                                                i.name
-                                                            );
-                                                        }}
-                                                    >
-                                                        {i.name}
-                                                    </Menu.Item>
-                                                )
-                                            )}
-                                        </Menu>
-                                    }
-                                >
-                                    <Button type="primary">Instructions</Button>
-                                </Dropdown>
-                            </div>
-                        </div>
+                        {recipeDetails &&
+                            recipeDetails.analyzedInstructions &&
+                            recipeDetails.analyzedInstructions.length > 0 && (
+                                <div className="instructions">
+                                    <div className="section-heading">
+                                        <Dropdown
+                                            overlay={
+                                                <Menu>
+                                                    {recipeDetails?.analyzedInstructions.map(
+                                                        (i, index) => (
+                                                            <Menu.Item
+                                                                key={index}
+                                                                onClick={() => {
+                                                                    openInstructionsModal();
+                                                                    setAnalysedInstructionTitle(
+                                                                        i.name
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {i.name}
+                                                            </Menu.Item>
+                                                        )
+                                                    )}
+                                                </Menu>
+                                            }
+                                        >
+                                            <Button type="primary">
+                                                Instructions
+                                            </Button>
+                                        </Dropdown>
+                                    </div>
+                                </div>
+                            )}
                     </div>
                     <div className="ingredients-container">
                         {recipeDetails?.extendedIngredients.map(
@@ -301,7 +316,10 @@ const RecipeDetails: React.FC<Props> = (props) => {
                                         ingredient.originalName
                                     )}
                                     <div className="quantity">
-                                        {ingredient.amount} {ingredient.unit}
+                                        {parseFloat(
+                                            ingredient.amount.toFixed(2)
+                                        )}{" "}
+                                        {ingredient.unit}
                                     </div>
                                 </div>
                             )

@@ -29,8 +29,6 @@ interface Props {
 }
 
 const RecipeItem: React.FC<Props> = (props) => {
-    console.log(props);
-
     const history = useHistory();
 
     const { data } = props;

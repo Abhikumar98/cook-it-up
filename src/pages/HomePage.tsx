@@ -3,9 +3,16 @@ import styled from "styled-components";
 import { Input, Form, Button, Collapse, Select, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Store } from "antd/lib/form/interface";
-import { Diets, Cuisines, FoodTypes, FetchRecipesRequest } from "../contracts";
+import {
+    Diets,
+    Cuisines,
+    FoodTypes,
+    FetchRecipesRequest,
+    AppRoutes,
+} from "../contracts";
 import { capitalizeFirstLetter } from "../utils";
 import { getRecipes } from "../services";
+import { useHistory } from "react-router-dom";
 
 const Container = styled.div`
     height: 100vh;
@@ -91,12 +98,16 @@ const LayoutContainer = styled.div`
 `;
 
 const HomePage = () => {
+    const history = useHistory();
+
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const fetchRecipes = async (values: Store) => {
         const fetchRecipesRequest = new FetchRecipesRequest();
 
         fetchRecipesRequest.query = values.query;
-        fetchRecipesRequest.type = values.type;
+        fetchRecipesRequest.type = values.type
+            ? values.type.join(",")
+            : undefined;
         fetchRecipesRequest.diet = values.diet
             ? values.diet.join(",")
             : undefined;
@@ -110,7 +121,24 @@ const HomePage = () => {
             : undefined;
         try {
             setIsLoading(true);
-            const response = await getRecipes(fetchRecipesRequest);
+            let queryParams = "";
+
+            Object.keys(fetchRecipesRequest).forEach((req: any, i: number) => {
+                const value = ((fetchRecipesRequest as unknown) as Record<
+                    string,
+                    string
+                >)[req];
+                if (value) {
+                    queryParams =
+                        queryParams + `${i === 0 ? "" : "&"}${req}=${value}`;
+                }
+            });
+
+            history.push(
+                `${AppRoutes.RecipeListPage}${
+                    queryParams.length > 0 ? `?${queryParams}` : ""
+                }`
+            );
         } catch (error) {
             console.error(error);
             message.error(error);
@@ -199,6 +227,7 @@ const HomePage = () => {
                                     <Select
                                         allowClear
                                         placeholder="Type ingredients to include"
+                                        mode="multiple"
                                     >
                                         {FoodTypes.map((i) => (
                                             <Select.Option key={i} value={i}>

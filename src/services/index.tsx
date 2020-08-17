@@ -7,7 +7,7 @@ const fetchRecipeDetailsURL =
 
 export const getRecipes = async (
     fetchRecipesRequest: FetchRecipesRequest
-): Promise<Recipe> => {
+): Promise<Recipe[]> => {
     try {
         let queryParams = "";
         let url = fetchRecipesURL;
@@ -23,20 +23,18 @@ export const getRecipes = async (
             }
         });
 
-        console.log({ v: process.env });
-
         if (queryParams.length > 0) {
-            url = `${url}?${queryParams}`;
-            // url = `${url}?${queryParams}&apiKey=cd3085c506154c0bbde6144acb84228e`;
+            // url = `${url}?${queryParams}`;
+            url = `${url}?${queryParams}&apiKey=cd3085c506154c0bbde6144acb84228e`;
         } else {
-            url = `${url}`;
-            // url = `${url}?apiKey=cd3085c506154c0bbde6144acb84228e`;
+            // url = `${url}`;
+            url = `${url}?apiKey=cd3085c506154c0bbde6144acb84228e`;
         }
 
         console.error("I have removed the API key for now");
 
-        const response: AxiosResponse<Recipe> = await axios.get(url);
-        return response.data;
+        const response: AxiosResponse<any> = await axios.get(url);
+        return response.data.results as Recipe[];
     } catch (error) {
         return Promise.reject(error);
     }

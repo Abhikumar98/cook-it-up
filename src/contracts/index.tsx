@@ -16,6 +16,8 @@ export class FetchRecipesRequest {
     addRecipeInformation?: boolean;
     ignorePantry = true;
     maxReadyTime?: number;
+    offset?: number;
+    number = 15;
 }
 
 export interface WinePairing {
