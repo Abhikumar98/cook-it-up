@@ -31,8 +31,6 @@ export const getRecipes = async (
             url = `${url}?apiKey=cd3085c506154c0bbde6144acb84228e`;
         }
 
-        console.error("I have removed the API key for now");
-
         const response: AxiosResponse<any> = await axios.get(url);
         return response.data.results as Recipe[];
     } catch (error) {

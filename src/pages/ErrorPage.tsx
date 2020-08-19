@@ -50,8 +50,6 @@ const ErrorPage = () => {
         (history.location.state as any).error &&
         (history.location.state as any).error.message;
 
-    console.log("====> ", errorMessage, (history.location.state as any).error);
-
     return (
         <Container>
             <div className="image-container">
