@@ -23,6 +23,24 @@ const Container = styled.div`
         font-size: 1.5rem;
         font-weight: 600;
     }
+    position: relative;
+    .overlay {
+        opacity: 0;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: black;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 900;
+    }
 `;
 
 interface Props {
@@ -54,12 +72,30 @@ const RecipeItem: React.FC<Props> = (props) => {
             }}
             initial="hidden"
             animate="visible"
+            whileHover={{
+                scale: 1.1,
+                transition: {
+                    delay: 0,
+                    staggerChildren: 0.3,
+                },
+            }}
+            whileTap={{ scale: 1.05 }}
         >
             <Container onClick={() => routeToRecipeDetails(data.id)}>
                 <div className="image-container">
                     <img src={data.image} alt={data.title} />
                 </div>
                 <div className="title">{data.title}</div>
+                <motion.div
+                    whileHover={{
+                        opacity: 0.7,
+                    }}
+                    initial="hidden"
+                    animate="visible"
+                    className="overlay"
+                >
+                    Go to Recipe
+                </motion.div>
             </Container>
         </motion.div>
     );

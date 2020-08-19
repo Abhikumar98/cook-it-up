@@ -145,16 +145,25 @@ const HomePage = () => {
             setIsLoading(true);
             let queryParams = "";
 
-            Object.keys(fetchRecipesRequest).forEach((req: any, i: number) => {
-                const value = ((fetchRecipesRequest as unknown) as Record<
-                    string,
-                    string
-                >)[req];
-                if (value) {
-                    queryParams =
-                        queryParams + `${i === 0 ? "" : "&"}${req}=${value}`;
-                }
-            });
+            Object.keys(fetchRecipesRequest)
+                .filter(
+                    (i) =>
+                        ((fetchRecipesRequest as unknown) as Record<
+                            string,
+                            string
+                        >)[i]
+                )
+                .forEach((req: any, i: number) => {
+                    const value = ((fetchRecipesRequest as unknown) as Record<
+                        string,
+                        string
+                    >)[req];
+                    if (value) {
+                        queryParams =
+                            queryParams +
+                            `${i === 0 ? "" : "&"}${req}=${value}`;
+                    }
+                });
 
             history.push(
                 `${AppRoutes.RecipeListPage}${
