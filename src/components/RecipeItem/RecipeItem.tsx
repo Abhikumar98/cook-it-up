@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Recipe, AppRoutes } from "../../contracts";
 import { useHistory } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Container = styled.div`
     border-radius: 4px;
@@ -26,6 +27,7 @@ const Container = styled.div`
 
 interface Props {
     readonly data: Recipe;
+    readonly index: number;
 }
 
 const RecipeItem: React.FC<Props> = (props) => {
@@ -38,12 +40,28 @@ const RecipeItem: React.FC<Props> = (props) => {
     };
 
     return (
-        <Container onClick={() => routeToRecipeDetails(data.id)}>
-            <div className="image-container">
-                <img src={data.image} alt={data.title} />
-            </div>
-            <div className="title">{data.title}</div>
-        </Container>
+        <motion.div
+            variants={{
+                hidden: { y: 20, opacity: 0 },
+                visible: {
+                    y: 0,
+                    opacity: 1,
+                    transition: {
+                        delay: 0.05 * props.index,
+                        staggerChildren: 0.1,
+                    },
+                },
+            }}
+            initial="hidden"
+            animate="visible"
+        >
+            <Container onClick={() => routeToRecipeDetails(data.id)}>
+                <div className="image-container">
+                    <img src={data.image} alt={data.title} />
+                </div>
+                <div className="title">{data.title}</div>
+            </Container>
+        </motion.div>
     );
 };
 

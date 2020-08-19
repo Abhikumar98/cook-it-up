@@ -19,6 +19,7 @@ import { RouteComponentProps, useHistory } from "react-router-dom";
 import emptyImage from "../Assests/empty.png";
 import loading from "../Assests/loading.gif";
 import { useForm } from "antd/lib/form/Form";
+import { motion } from "framer-motion";
 
 const SearchBoxContainer = styled.div`
     width: 70%;
@@ -88,7 +89,7 @@ const LoadMoreButton = styled(Button)`
     margin: 24px auto;
     display: block;
 `;
-const ResultContainer = styled.div`
+const ResultContainer = styled(motion.div)`
     padding: 24px;
     display: grid;
     grid-gap: 2rem;
@@ -250,96 +251,107 @@ const RecipeList: React.FC<Props> = (props) => {
 
     return (
         <Container>
-            <SearchBoxContainer>
-                <Form
-                    labelAlign="left"
-                    labelCol={{ span: 7 }}
-                    layout="horizontal"
-                    onFinish={fetchRecipes}
-                    initialValues={filters}
-                    form={form}
-                >
-                    <div className="search-bar-container">
-                        <Form.Item name="query">
-                            <Input
-                                allowClear
-                                onPressEnter={() => {
-                                    const a = form.getFieldsValue();
-                                    console.log(a);
-                                }}
-                            />
-                        </Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            icon={<SearchOutlined />}
-                            disabled={isLoading}
-                            loading={isLoading}
-                        >
-                            Search
-                        </Button>
-                    </div>
-                    <Popover
-                        trigger="click"
-                        placement="bottomLeft"
-                        content={
-                            <>
-                                <Form.Item label="Diet" name="diet">
-                                    <Select
-                                        placeholder="Choose your diet"
-                                        mode="multiple"
-                                        allowClear
-                                    >
-                                        {Diets.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {i}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                                <Form.Item label="Cuisine" name="cuisine">
-                                    <Select
-                                        allowClear
-                                        placeholder="Choose your cuisine"
-                                        mode="multiple"
-                                    >
-                                        {Cuisines.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {i}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                                <Form.Item
-                                    label="Include ingredients"
-                                    name="includeIngredients"
-                                >
-                                    <Select
-                                        allowClear
-                                        placeholder="Type ingredients to include"
-                                        mode="tags"
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Type of food" name="type">
-                                    <Select
-                                        allowClear
-                                        placeholder="Type ingredients to include"
-                                        mode="multiple"
-                                    >
-                                        {FoodTypes.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {capitalizeFirstLetter(i)}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </>
-                        }
+            <motion.div layoutId="search">
+                <SearchBoxContainer>
+                    <Form
+                        labelAlign="left"
+                        labelCol={{ span: 7 }}
+                        layout="horizontal"
+                        onFinish={fetchRecipes}
+                        initialValues={filters}
+                        form={form}
                     >
-                        <Button type="link">Filters</Button>
-                    </Popover>
-                </Form>
-            </SearchBoxContainer>
+                        <div className="search-bar-container">
+                            <Form.Item name="query">
+                                <Input
+                                    allowClear
+                                    onPressEnter={() => {
+                                        const a = form.getFieldsValue();
+                                        console.log(a);
+                                    }}
+                                />
+                            </Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                icon={<SearchOutlined />}
+                                disabled={isLoading}
+                                loading={isLoading}
+                            >
+                                Search
+                            </Button>
+                        </div>
+                        <Popover
+                            trigger="click"
+                            placement="bottomLeft"
+                            content={
+                                <>
+                                    <Form.Item label="Diet" name="diet">
+                                        <Select
+                                            placeholder="Choose your diet"
+                                            mode="multiple"
+                                            allowClear
+                                        >
+                                            {Diets.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {i}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item label="Cuisine" name="cuisine">
+                                        <Select
+                                            allowClear
+                                            placeholder="Choose your cuisine"
+                                            mode="multiple"
+                                        >
+                                            {Cuisines.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {i}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Include ingredients"
+                                        name="includeIngredients"
+                                    >
+                                        <Select
+                                            allowClear
+                                            placeholder="Type ingredients to include"
+                                            mode="tags"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Type of food" name="type">
+                                        <Select
+                                            allowClear
+                                            placeholder="Type ingredients to include"
+                                            mode="multiple"
+                                        >
+                                            {FoodTypes.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {capitalizeFirstLetter(i)}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </>
+                            }
+                        >
+                            <Button type="link">Filters</Button>
+                        </Popover>
+                    </Form>
+                </SearchBoxContainer>
+            </motion.div>
             {isLoading ? (
                 <div className="empty">
                     <img src={loading} />
@@ -348,8 +360,8 @@ const RecipeList: React.FC<Props> = (props) => {
             ) : recipes && recipes.length > 0 ? (
                 <ResultLayout>
                     <ResultContainer>
-                        {recipes?.map((i: any) => (
-                            <RecipeItem key={i.id} data={i} />
+                        {recipes?.map((i: any, index: number) => (
+                            <RecipeItem key={i.id} data={i} index={index} />
                         ))}
                     </ResultContainer>
                     {recipes && recipes.length > 0 && (

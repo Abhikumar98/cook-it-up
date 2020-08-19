@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Input, Form, Button, Collapse, Select, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Store } from "antd/lib/form/interface";
+import { motion } from "framer-motion";
 import {
     Diets,
     Cuisines,
@@ -186,81 +187,92 @@ const HomePage = () => {
                     <SubHeadingText
                         style={{ textAlign: "center" }}
                     ></SubHeadingText>
-                    <Form
-                        labelAlign="left"
-                        labelCol={{ span: 7 }}
-                        layout="horizontal"
-                        onFinish={fetchRecipes}
-                        initialValues={undefined}
-                    >
-                        <div className="search-bar-container">
-                            <Form.Item name="query">
-                                <Input allowClear />
-                            </Form.Item>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
-                                icon={<SearchOutlined />}
-                                disabled={isLoading}
-                                loading={isLoading}
-                            >
-                                Search
-                            </Button>
-                        </div>
-                        <Collapse>
-                            <Collapse.Panel key="1" header="Filters">
-                                <Form.Item label="Diet" name="diet">
-                                    <Select
-                                        placeholder="Choose your diet"
-                                        mode="multiple"
-                                        allowClear
-                                    >
-                                        {Diets.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {i}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
+                    <motion.div layoutId="search">
+                        <Form
+                            labelAlign="left"
+                            labelCol={{ span: 7 }}
+                            layout="horizontal"
+                            onFinish={fetchRecipes}
+                            initialValues={undefined}
+                        >
+                            <div className="search-bar-container">
+                                <Form.Item name="query">
+                                    <Input allowClear />
                                 </Form.Item>
-                                <Form.Item label="Cuisine" name="cuisine">
-                                    <Select
-                                        allowClear
-                                        placeholder="Choose your cuisine"
-                                        mode="multiple"
-                                    >
-                                        {Cuisines.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {i}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                                <Form.Item
-                                    label="Include ingredients"
-                                    name="includeIngredients"
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    icon={<SearchOutlined />}
+                                    disabled={isLoading}
+                                    loading={isLoading}
                                 >
-                                    <Select
-                                        allowClear
-                                        placeholder="Type ingredients to include"
-                                        mode="tags"
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Type of food" name="type">
-                                    <Select
-                                        allowClear
-                                        placeholder="Type ingredients to include"
-                                        mode="multiple"
+                                    Search
+                                </Button>
+                            </div>
+                            <Collapse>
+                                <Collapse.Panel key="1" header="Filters">
+                                    <Form.Item label="Diet" name="diet">
+                                        <Select
+                                            placeholder="Choose your diet"
+                                            mode="multiple"
+                                            allowClear
+                                        >
+                                            {Diets.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {i}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item label="Cuisine" name="cuisine">
+                                        <Select
+                                            allowClear
+                                            placeholder="Choose your cuisine"
+                                            mode="multiple"
+                                        >
+                                            {Cuisines.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {i}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                    <Form.Item
+                                        label="Include ingredients"
+                                        name="includeIngredients"
                                     >
-                                        {FoodTypes.map((i) => (
-                                            <Select.Option key={i} value={i}>
-                                                {capitalizeFirstLetter(i)}
-                                            </Select.Option>
-                                        ))}
-                                    </Select>
-                                </Form.Item>
-                            </Collapse.Panel>
-                        </Collapse>
-                    </Form>
+                                        <Select
+                                            allowClear
+                                            placeholder="Type ingredients to include"
+                                            mode="tags"
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Type of food" name="type">
+                                        <Select
+                                            allowClear
+                                            placeholder="Type ingredients to include"
+                                            mode="multiple"
+                                        >
+                                            {FoodTypes.map((i) => (
+                                                <Select.Option
+                                                    key={i}
+                                                    value={i}
+                                                >
+                                                    {capitalizeFirstLetter(i)}
+                                                </Select.Option>
+                                            ))}
+                                        </Select>
+                                    </Form.Item>
+                                </Collapse.Panel>
+                            </Collapse>
+                        </Form>
+                    </motion.div>
                 </SearchBoxContainer>
             </LayoutContainer>
         </Container>

@@ -5,24 +5,33 @@ import RecipeListPage from "./pages/RecipeListPage";
 import RecipeDetailsPage from "./pages/RecipeDetailsPage";
 import InstructionsPage from "./pages/InstructionsPage";
 import { AppRoutes } from "./contracts";
+import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
 
 const Routes = () => {
     return (
         <Router>
             <Switch>
-                <Route exact path={AppRoutes.HomePage} component={HomePage} />
-                <Route
-                    path={AppRoutes.RecipeInstructionsPage}
-                    component={InstructionsPage}
-                />
-                <Route
-                    path={AppRoutes.RecipeDetailsPage}
-                    component={RecipeDetailsPage}
-                />
-                <Route
-                    path={AppRoutes.RecipeListPage}
-                    component={RecipeListPage}
-                />
+                <AnimateSharedLayout>
+                    <Route
+                        exact
+                        path={AppRoutes.HomePage}
+                        component={HomePage}
+                    />
+                    <Route
+                        path={AppRoutes.RecipeInstructionsPage}
+                        component={InstructionsPage}
+                    />
+                    <Route
+                        path={AppRoutes.RecipeDetailsPage}
+                        component={RecipeDetailsPage}
+                    />
+                    <AnimatePresence>
+                        <Route
+                            path={AppRoutes.RecipeListPage}
+                            component={RecipeListPage}
+                        />
+                    </AnimatePresence>
+                </AnimateSharedLayout>
             </Switch>
         </Router>
     );
