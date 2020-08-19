@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { withRouter, RouteComponentProps, Link } from "react-router-dom";
+import {
+    withRouter,
+    RouteComponentProps,
+    Link,
+    useHistory,
+} from "react-router-dom";
 import { getRecipeDetails } from "../services";
 import { message, Dropdown, Menu, Button, Checkbox } from "antd";
 import { RecipeDetail, AppRoutes } from "../contracts";
 import { sample, capitalizeFirstLetter } from "../utils";
 import Modal from "antd/lib/modal/Modal";
-
+import loading from "../Assests/loading.gif";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import "./modal.scss";
 
 const Container = styled.div`
     height: 100vh;
     width: 100vw;
     padding: 24px;
+    .empty {
+        width: 30rem;
+        margin: auto;
+        margin-top: 12rem;
+        text-align: center;
+        img {
+            width: 100%;
+        }
+    }
     @media screen and (max-width: 991px) {
         padding: 0;
     }
@@ -157,9 +172,13 @@ type TParams = { id: string };
 interface Props extends RouteComponentProps<TParams> {}
 
 const RecipeDetails: React.FC<Props> = (props) => {
+    const history = useHistory();
+
     const [recipeDetails, setRecipeDetails] = useState<RecipeDetail | null>(
         null
     );
+
+    const [isloading, setLoading] = useState<boolean>(false);
 
     const [analysedInstructionTitle, setAnalysedInstructionTitle] = useState<
         string | null
@@ -174,6 +193,7 @@ const RecipeDetails: React.FC<Props> = (props) => {
 
     const fetchRecipeDetails = async () => {
         try {
+            setLoading(true);
             const recipeId = props.match.params.id;
             const response = await getRecipeDetails(recipeId);
 
@@ -187,146 +207,173 @@ const RecipeDetails: React.FC<Props> = (props) => {
         } catch (error) {
             console.error(error);
             message.error(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
+    const goBackButton = () => history.goBack();
     useEffect(() => {
         fetchRecipeDetails();
     }, []);
 
     return (
         <Container>
-            <Link to={{ pathname: AppRoutes.RecipeListPage }}>
-                <Button type="link">Back</Button>
-            </Link>
-            <DetailsContainer>
-                <LeftSideContents>
-                    <div className="image-title">
-                        <div className="image-container">
-                            <img
-                                src={recipeDetails?.image}
-                                alt={recipeDetails?.title}
+            {isloading ? (
+                <div className="empty">
+                    <img src={loading} />
+                </div>
+            ) : (
+                <>
+                    <Button
+                        type="link"
+                        icon={<ArrowLeftOutlined />}
+                        onClick={goBackButton}
+                    >
+                        Back
+                    </Button>
+                    <DetailsContainer>
+                        <LeftSideContents>
+                            <div className="image-title">
+                                <div className="image-container">
+                                    <img
+                                        src={recipeDetails?.image}
+                                        alt={recipeDetails?.title}
+                                    />
+                                </div>
+                                <div className="title-time">
+                                    <div className="title">
+                                        {recipeDetails?.title}
+                                    </div>
+                                    <div className="time">
+                                        {recipeDetails?.readyInMinutes} mins
+                                    </div>
+                                </div>
+                                <div className="arthur-details">
+                                    By{" "}
+                                    <a href={recipeDetails?.sourceUrl}>
+                                        {recipeDetails?.creditsText}
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="chip-container">
+                                {recipeDetails?.cuisines.map((i) => (
+                                    <div key={i} className="chip one">
+                                        {capitalizeFirstLetter(i)}
+                                    </div>
+                                ))}
+                                {recipeDetails?.diets.map((i) => (
+                                    <div key={i} className="chip two">
+                                        {capitalizeFirstLetter(i)}
+                                    </div>
+                                ))}
+                                {recipeDetails?.dishTypes.map((i) => (
+                                    <div key={i} className="chip three">
+                                        {capitalizeFirstLetter(i)}
+                                    </div>
+                                ))}
+                            </div>
+                            <div
+                                className="summary"
+                                dangerouslySetInnerHTML={{
+                                    __html: recipeDetails?.summary ?? "",
+                                }}
                             />
-                        </div>
-                        <div className="title-time">
-                            <div className="title">{recipeDetails?.title}</div>
-                            <div className="time">
-                                {recipeDetails?.readyInMinutes} mins
-                            </div>
-                        </div>
-                        <div className="arthur-details">
-                            By{" "}
-                            <a href={recipeDetails?.sourceUrl}>
-                                {recipeDetails?.creditsText}
-                            </a>
-                        </div>
-                    </div>
-                    <div className="chip-container">
-                        {recipeDetails?.cuisines.map((i) => (
-                            <div key={i} className="chip one">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
-                        {recipeDetails?.diets.map((i) => (
-                            <div key={i} className="chip two">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
-                        {recipeDetails?.dishTypes.map((i) => (
-                            <div key={i} className="chip three">
-                                {capitalizeFirstLetter(i)}
-                            </div>
-                        ))}
-                    </div>
-                    <div
-                        className="summary"
-                        dangerouslySetInnerHTML={{
-                            __html: recipeDetails?.summary ?? "",
-                        }}
-                    />
-                    {recipeDetails &&
-                        recipeDetails.winePairing &&
-                        recipeDetails.winePairing.pairedWines &&
-                        recipeDetails.winePairing.pairedWines.length > 0 && (
-                            <div className="wine-container">
-                                <div className="section-heading">
-                                    Wine Pairings
-                                </div>
-                                <div className="text">
-                                    {recipeDetails?.winePairing.pairingText}
-                                </div>
-                                {recipeDetails?.winePairing.productMatches.map(
-                                    (wine: any) => (
-                                        <a href={wine.link}>
-                                            <div className="wine">
-                                                <img
-                                                    src={wine.imageUrl}
-                                                    alt=""
-                                                />
-                                                {wine.title}
+                            {recipeDetails &&
+                                recipeDetails.winePairing &&
+                                recipeDetails.winePairing.pairedWines &&
+                                recipeDetails.winePairing.pairedWines.length >
+                                    0 && (
+                                    <div className="wine-container">
+                                        <div className="section-heading">
+                                            Wine Pairings
+                                        </div>
+                                        <div className="text">
+                                            {
+                                                recipeDetails?.winePairing
+                                                    .pairingText
+                                            }
+                                        </div>
+                                        {recipeDetails?.winePairing.productMatches.map(
+                                            (wine: any) => (
+                                                <a href={wine.link}>
+                                                    <div className="wine">
+                                                        <img
+                                                            src={wine.imageUrl}
+                                                            alt=""
+                                                        />
+                                                        {wine.title}
+                                                    </div>
+                                                </a>
+                                            )
+                                        )}
+                                    </div>
+                                )}
+                        </LeftSideContents>
+                        <RightSideContents>
+                            <div className="section-heading">
+                                Ingredients{" "}
+                                {recipeDetails &&
+                                    recipeDetails.analyzedInstructions &&
+                                    recipeDetails.analyzedInstructions.length >
+                                        0 && (
+                                        <div className="instructions">
+                                            <div className="section-heading">
+                                                <Dropdown
+                                                    overlay={
+                                                        <Menu>
+                                                            {recipeDetails?.analyzedInstructions.map(
+                                                                (i, index) => (
+                                                                    <Menu.Item
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        onClick={() => {
+                                                                            openInstructionsModal();
+                                                                            setAnalysedInstructionTitle(
+                                                                                i.name
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        {i.name}
+                                                                    </Menu.Item>
+                                                                )
+                                                            )}
+                                                        </Menu>
+                                                    }
+                                                >
+                                                    <Button type="primary">
+                                                        Instructions
+                                                    </Button>
+                                                </Dropdown>
                                             </div>
-                                        </a>
+                                        </div>
+                                    )}
+                            </div>
+                            <div className="ingredients-container">
+                                {recipeDetails?.extendedIngredients.map(
+                                    (ingredient) => (
+                                        <div
+                                            key={ingredient.id}
+                                            className="ingredient"
+                                        >
+                                            {capitalizeFirstLetter(
+                                                ingredient.originalName
+                                            )}
+                                            <div className="quantity">
+                                                {parseFloat(
+                                                    ingredient.amount.toFixed(2)
+                                                )}{" "}
+                                                {ingredient.unit}
+                                            </div>
+                                        </div>
                                     )
                                 )}
                             </div>
-                        )}
-                </LeftSideContents>
-                <RightSideContents>
-                    <div className="section-heading">
-                        Ingredients{" "}
-                        {recipeDetails &&
-                            recipeDetails.analyzedInstructions &&
-                            recipeDetails.analyzedInstructions.length > 0 && (
-                                <div className="instructions">
-                                    <div className="section-heading">
-                                        <Dropdown
-                                            overlay={
-                                                <Menu>
-                                                    {recipeDetails?.analyzedInstructions.map(
-                                                        (i, index) => (
-                                                            <Menu.Item
-                                                                key={index}
-                                                                onClick={() => {
-                                                                    openInstructionsModal();
-                                                                    setAnalysedInstructionTitle(
-                                                                        i.name
-                                                                    );
-                                                                }}
-                                                            >
-                                                                {i.name}
-                                                            </Menu.Item>
-                                                        )
-                                                    )}
-                                                </Menu>
-                                            }
-                                        >
-                                            <Button type="primary">
-                                                Instructions
-                                            </Button>
-                                        </Dropdown>
-                                    </div>
-                                </div>
-                            )}
-                    </div>
-                    <div className="ingredients-container">
-                        {recipeDetails?.extendedIngredients.map(
-                            (ingredient) => (
-                                <div key={ingredient.id} className="ingredient">
-                                    {capitalizeFirstLetter(
-                                        ingredient.originalName
-                                    )}
-                                    <div className="quantity">
-                                        {parseFloat(
-                                            ingredient.amount.toFixed(2)
-                                        )}{" "}
-                                        {ingredient.unit}
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </RightSideContents>
-            </DetailsContainer>
+                        </RightSideContents>
+                    </DetailsContainer>
+                </>
+            )}
             <Modal
                 centered
                 destroyOnClose

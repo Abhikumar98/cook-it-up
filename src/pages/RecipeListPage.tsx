@@ -17,9 +17,12 @@ import { getRecipes } from "../services";
 import RecipeItem from "../components/RecipeItem/RecipeItem";
 import { RouteComponentProps, useHistory } from "react-router-dom";
 import emptyImage from "../Assests/empty.png";
+import loading from "../Assests/loading.gif";
 import { useForm } from "antd/lib/form/Form";
 
 const SearchBoxContainer = styled.div`
+    width: 70%;
+    margin: auto;
     background: white;
     grid-area: search;
     display: flex;
@@ -80,6 +83,11 @@ const Container = styled.div`
         }
     }
 `;
+
+const LoadMoreButton = styled(Button)`
+    margin: 24px auto;
+    display: block;
+`;
 const ResultContainer = styled.div`
     padding: 24px;
     display: grid;
@@ -98,6 +106,7 @@ const RecipeList: React.FC<Props> = (props) => {
     const history = useHistory();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isMoreLoading, setIsMoreLoading] = useState<boolean>(false);
 
     const [recipes, setRecipes] = useState<Recipe[] | null>(
         props.location.state ? (props.location.state as any).results : null
@@ -111,6 +120,10 @@ const RecipeList: React.FC<Props> = (props) => {
                 string,
                 string
             >)[key];
+
+            if (!value) {
+                return final;
+            }
 
             value =
                 value.split(",").length > 1
@@ -160,16 +173,27 @@ const RecipeList: React.FC<Props> = (props) => {
 
             let queryParams = "";
 
-            Object.keys(fetchRecipesRequest).forEach((req: any, i: number) => {
-                const value = ((fetchRecipesRequest as unknown) as Record<
-                    string,
-                    string
-                >)[req];
-                if (value) {
-                    queryParams =
-                        queryParams + `${i === 0 ? "" : "&"}${req}=${value}`;
-                }
-            });
+            Object.keys(fetchRecipesRequest)
+                .filter(
+                    (req) =>
+                        ((fetchRecipesRequest as unknown) as Record<
+                            string,
+                            string
+                        >)[req]
+                )
+                .forEach((req: any, i: number) => {
+                    const value = ((fetchRecipesRequest as unknown) as Record<
+                        string,
+                        string
+                    >)[req];
+                    console.log(value);
+                    if (value) {
+                        queryParams =
+                            queryParams +
+                            `${i === 0 ? "" : "&"}${req}=${value}`;
+                    }
+                });
+            console.log(queryParams);
             const response = await getRecipes(fetchRecipesRequest);
             setRecipes(response);
             history.push(
@@ -187,6 +211,7 @@ const RecipeList: React.FC<Props> = (props) => {
 
     const fetchMoreRecipes = async () => {
         try {
+            setIsMoreLoading(true);
             const fetchRecipesRequest = new FetchRecipesRequest();
             fetchRecipesRequest.query = filters.query;
             fetchRecipesRequest.type = filters.type;
@@ -207,6 +232,8 @@ const RecipeList: React.FC<Props> = (props) => {
             setRecipes(allRecipes);
         } catch (error) {
             console.error(error);
+        } finally {
+            setIsMoreLoading(false);
         }
     };
 
@@ -313,22 +340,32 @@ const RecipeList: React.FC<Props> = (props) => {
                     </Popover>
                 </Form>
             </SearchBoxContainer>
-            {recipes && recipes.length > 0 ? (
+            {isLoading ? (
+                <div className="empty">
+                    <img src={loading} />
+                    Looking up your food
+                </div>
+            ) : recipes && recipes.length > 0 ? (
                 <ResultLayout>
                     <ResultContainer>
                         {recipes?.map((i: any) => (
                             <RecipeItem key={i.id} data={i} />
                         ))}
                     </ResultContainer>
+                    {recipes && recipes.length > 0 && (
+                        <LoadMoreButton
+                            loading={isMoreLoading}
+                            onClick={fetchMoreRecipes}
+                        >
+                            Load More
+                        </LoadMoreButton>
+                    )}
                 </ResultLayout>
             ) : (
                 <div className="empty">
                     <img src={emptyImage} />
                     We couldn't find what you want !!
                 </div>
-            )}
-            {recipes && recipes.length > 0 && (
-                <Button onClick={fetchMoreRecipes}>Load More</Button>
             )}
         </Container>
     );

@@ -11,17 +11,28 @@ import {
     AppRoutes,
 } from "../contracts";
 import { capitalizeFirstLetter } from "../utils";
-import { getRecipes } from "../services";
 import { useHistory } from "react-router-dom";
+import background from "../Assests/background.jpg";
 
 const Container = styled.div`
     height: 100vh;
     width: 100vw;
     overflow: auto;
+    background-image: url(${background});
+    background-position: center;
+    background-size: cover;
+    background-origin: initial;
 `;
 const HeadingText = styled.div`
     font-size: 3rem;
     font-weight: 600;
+`;
+const BigText = styled.div`
+    font-size: 5rem;
+    font-weight: 600;
+`;
+const MediumText = styled.div`
+    font-size: 3rem;
 `;
 const SubHeadingText = styled.div`
     font-size: 1.5rem;
@@ -34,9 +45,15 @@ const TextContainer = styled.div`
     flex-direction: column;
     padding: 24px;
     justify-content: center;
+    background: white;
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
 `;
 const SearchBoxContainer = styled.div`
     grid-area: search;
+    background: white;
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
     display: flex;
     flex-direction: column;
     padding: 24px;
@@ -79,15 +96,19 @@ const SearchBoxContainer = styled.div`
 const LayoutContainer = styled.div`
     height: calc(100%);
     padding: 5rem;
+    width: 70%;
+    margin: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-areas: "text search";
     @media screen and (max-width: 1024px) {
         height: calc(100%);
+        width: 100%;
         padding: 2rem;
     }
     @media screen and (max-width: 991px) {
         height: calc(100%);
+        width: 100%;
         padding: 1rem;
         grid-template-rows: 1fr 1fr;
         grid-template-columns: unset;
@@ -150,20 +171,21 @@ const HomePage = () => {
         <Container>
             <LayoutContainer>
                 <TextContainer>
-                    <HeadingText>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit.
-                    </HeadingText>
+                    <BigText>Welcome to Cook it up</BigText>
                     <SubHeadingText>
-                        Tempore quo labore corporis obcaecati quas illum,
-                        accusamus rerum Lorem ipsum, dolor sit amet consectetur
-                        adipisicing elit. Tempore quo labore corporis obcaecati
-                        quas illum, accusamus rerum
+                        Cooking more at home? From pantry-friendly recipes to
+                        expert cooking advice, we’ve got the tools to help you
+                        create order, find your calm, and make the most of your
+                        time with loved ones.
                     </SubHeadingText>
                 </TextContainer>
                 <SearchBoxContainer>
-                    <HeadingText>Search food</HeadingText>
-                    <SubHeadingText>Begin something something</SubHeadingText>
+                    <HeadingText style={{ textAlign: "center" }}>
+                        Search food
+                    </HeadingText>
+                    <SubHeadingText
+                        style={{ textAlign: "center" }}
+                    ></SubHeadingText>
                     <Form
                         labelAlign="left"
                         labelCol={{ span: 7 }}
