@@ -25,10 +25,10 @@ export const getRecipes = async (
 
         if (queryParams.length > 0) {
             // url = `${url}?${queryParams}`;
-            url = `${url}?${queryParams}&apiKey=cd3085c506154c0bbde6144acb84228e`;
+            url = `${url}?${queryParams}&apiKey=33da5a5675bb472d9d46ef4e1abd8988`;
         } else {
             // url = `${url}`;
-            url = `${url}?apiKey=cd3085c506154c0bbde6144acb84228e`;
+            url = `${url}?apiKey=33da5a5675bb472d9d46ef4e1abd8988`;
         }
 
         const response: AxiosResponse<any> = await axios.get(url);
@@ -42,7 +42,7 @@ export const getRecipeDetails = async (id: string): Promise<RecipeDetail> => {
     try {
         const response: AxiosResponse<RecipeDetail> = await axios.get(
             fetchRecipeDetailsURL.replace("{id}", id) +
-                `?apiKey=cd3085c506154c0bbde6144acb84228e`
+                `?apiKey=33da5a5675bb472d9d46ef4e1abd8988`
         );
 
         return response.data;
