@@ -206,7 +206,6 @@ const RecipeDetails: React.FC<Props> = (props) => {
             setRecipeDetails(response);
         } catch (error) {
             console.error(error);
-            message.error(error.message);
             history.push(AppRoutes.ErrorPage, {
                 error: error,
             });

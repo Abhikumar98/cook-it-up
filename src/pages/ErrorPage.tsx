@@ -45,14 +45,12 @@ const ErrorPage = () => {
         history.goBack();
     };
 
-    const errorMessage =
+    const errorMessage: string | undefined =
         (history.location.state as any) &&
         (history.location.state as any).error &&
-        (history.location.state as any).error.response &&
-        (history.location.state as any).error.response.data &&
-        (history.location.state as any).error.response.data.message
-            ? (history.location.state as any).error.data.message
-            : null;
+        (history.location.state as any).error.message;
+
+    console.log("====> ", errorMessage, (history.location.state as any).error);
 
     return (
         <Container>
@@ -60,10 +58,16 @@ const ErrorPage = () => {
                 <div className="error">
                     <div className="heading">Oops, something went wrong.</div>
                     {errorMessage && (
-                        <div className="error-message">{errorMessage}</div>
+                        <div className="error-message">
+                            {(errorMessage as string).includes("402")
+                                ? "You have reached your daily API request limit"
+                                : errorMessage}
+                        </div>
                     )}
                     <span onClick={handleGoBack} className="hover">
-                        Please try again
+                        {(errorMessage as string).includes("402")
+                            ? "Go back"
+                            : "Please try again"}
                     </span>
                 </div>
                 <img src={error} alt="Error" />
