@@ -48,8 +48,9 @@ const ErrorPage = () => {
     const errorMessage =
         (history.location.state as any) &&
         (history.location.state as any).error &&
-        (history.location.state as any).error.data &&
-        (history.location.state as any).error.data.message
+        (history.location.state as any).error.response &&
+        (history.location.state as any).error.response.data &&
+        (history.location.state as any).error.response.data.message
             ? (history.location.state as any).error.data.message
             : null;
 
