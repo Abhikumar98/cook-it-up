@@ -6,6 +6,7 @@ import RecipeDetailsPage from "./pages/RecipeDetailsPage";
 import InstructionsPage from "./pages/InstructionsPage";
 import { AppRoutes } from "./contracts";
 import { AnimatePresence, AnimateSharedLayout } from "framer-motion";
+import ErrorPage from "./pages/ErrorPage";
 
 const Routes = () => {
     return (
@@ -31,6 +32,7 @@ const Routes = () => {
                             component={RecipeListPage}
                         />
                     </AnimatePresence>
+                    <Route path={AppRoutes.ErrorPage} component={ErrorPage} />
                 </AnimateSharedLayout>
             </Switch>
         </Router>

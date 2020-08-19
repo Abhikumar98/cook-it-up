@@ -205,6 +205,9 @@ const RecipeList: React.FC<Props> = (props) => {
         } catch (error) {
             console.error(error);
             message.error(error);
+            history.push(AppRoutes.ErrorPage, {
+                error: error,
+            });
         } finally {
             setIsLoading(false);
         }
@@ -233,6 +236,10 @@ const RecipeList: React.FC<Props> = (props) => {
             setRecipes(allRecipes);
         } catch (error) {
             console.error(error);
+            message.error(error);
+            history.push(AppRoutes.ErrorPage, {
+                error: error,
+            });
         } finally {
             setIsMoreLoading(false);
         }

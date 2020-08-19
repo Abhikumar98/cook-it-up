@@ -97,7 +97,7 @@ const SearchBoxContainer = styled.div`
 const LayoutContainer = styled.div`
     height: calc(100%);
     padding: 5rem;
-    width: 70%;
+    width: 90%;
     margin: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;

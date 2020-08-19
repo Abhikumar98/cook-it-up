@@ -207,6 +207,9 @@ const RecipeDetails: React.FC<Props> = (props) => {
         } catch (error) {
             console.error(error);
             message.error(error.message);
+            history.push(AppRoutes.ErrorPage, {
+                error: error,
+            });
         } finally {
             setLoading(false);
         }

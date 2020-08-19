@@ -3,6 +3,7 @@ export enum AppRoutes {
     RecipeListPage = "/recipes",
     RecipeDetailsPage = "/recipe/:id",
     RecipeInstructionsPage = "/recipe/:id/instructions",
+    ErrorPage = "/error",
 }
 
 export class FetchRecipesRequest {
